@@ -134,6 +134,7 @@
         </div>
 
         <p id="combo-counter" class="combo-counter"></p>
+        <p id="fav-counter" class="fav-counter">♥ お気に入り: 0件</p>
       </div>
     </main>
 
@@ -176,9 +177,12 @@
         <span>スワイプ</span>
       </button>
       <button class="tab-btn" data-tab="favs" id="tab-btn-favs">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-        </svg>
+        <div class="tab-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+          <span id="fav-tab-badge" class="tab-badge hidden">0</span>
+        </div>
         <span>お気に入り</span>
       </button>
     </nav>

@@ -234,6 +234,7 @@
     });
     if (tabName === 'swipe') initSwipe();
     if (tabName === 'favs') renderFavs();
+    updateFavCount();
   }
 
   tabBtns.forEach(btn => {
@@ -368,6 +369,7 @@
     totalPossible = topsList.length * bottomsList.length;
     shownCombos.clear();
 
+    await updateFavCount();
     showNextCombo();
   }
 
@@ -497,6 +499,33 @@
     };
     await dbAdd(STORE_FAVS, fav);
     showToast('♥ お気に入りに保存！');
+    await updateFavCount();
+  }
+
+  // ── Fav Count Badge ─────────────────────────────────────────
+  const favTabBadge = document.getElementById('fav-tab-badge');
+  const favCounter = document.getElementById('fav-counter');
+
+  async function updateFavCount() {
+    // Count all favorites (total across all seasons)
+    const allFavs = await dbGetAll(STORE_FAVS);
+    const totalCount = allFavs.length;
+
+    // Update tab badge
+    if (totalCount > 0) {
+      favTabBadge.textContent = totalCount;
+      favTabBadge.classList.remove('hidden');
+      favTabBadge.classList.remove('pop');
+      void favTabBadge.offsetWidth; // force reflow
+      favTabBadge.classList.add('pop');
+    } else {
+      favTabBadge.classList.add('hidden');
+    }
+
+    // Update swipe screen counter (season-specific)
+    const currentSwipeSeason = seasonState.swipe;
+    const seasonFavs = allFavs.filter(f => f.season === currentSwipeSeason);
+    favCounter.textContent = `♥ お気に入り: ${seasonFavs.length}件`;
   }
 
   const favsEmpty = document.getElementById('favs-empty');
@@ -587,6 +616,8 @@
 
       favsList.appendChild(card);
     });
+
+    await updateFavCount();
   }
 
   // ── Keyboard shortcuts ──────────────────────────────────────
@@ -608,6 +639,7 @@
 
   openDB().then(async () => {
     await renderAllGalleries();
+    await updateFavCount();
   }).catch(err => {
     console.error('DB error:', err);
     showToast('データベースの初期化に失敗しました');

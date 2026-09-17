@@ -253,6 +253,46 @@ body {
   transition: transform 0.25s var(--ease-spring);
 }
 
+.tab-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--accent-rose);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: transform 0.3s var(--ease-spring), opacity 0.2s;
+}
+
+.tab-badge.hidden {
+  display: none;
+}
+
+.tab-badge.pop {
+  animation: badgePop 0.4s var(--ease-spring);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
 /* ========================================
    Closet (Upload) Tab
    ======================================== */
@@ -608,6 +648,14 @@ body {
   text-align: center;
   padding: 4px 0 0;
   font-weight: 400;
+}
+
+.fav-counter {
+  font-size: 0.72rem;
+  color: var(--accent-rose);
+  text-align: center;
+  padding: 2px 0 0;
+  font-weight: 500;
 }
 
 /* ========================================
