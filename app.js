@@ -606,7 +606,7 @@
       const date = new Date(fav.timestamp);
       const dateStr = `${(date.getMonth()+1)}/${date.getDate()}`;
 
-      const triedLabel = fav.tried ? '挑戦済み ✓' : '未挑戦';
+      const triedLabel = fav.tried ? '挑戦済み ✓' : '挑戦済みにする';
       const triedClass = fav.tried ? 'tried-toggle is-tried' : 'tried-toggle';
 
       card.innerHTML = `
