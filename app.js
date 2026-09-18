@@ -104,6 +104,15 @@
     });
   }
 
+  function dbPut(storeName, data) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put(data);
+      tx.oncomplete = () => resolve();
+      tx.onerror = (e) => reject(e.target.error);
+    });
+  }
+
   // ── Utility ──────────────────────────────────────────────────
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -531,6 +540,21 @@
   const favsEmpty = document.getElementById('favs-empty');
   const favsList = document.getElementById('favs-list');
 
+  // Filter state
+  let favsFilter = 'all'; // 'all' | 'untried' | 'tried'
+
+  // Initialize filter bar
+  const filterBar = document.getElementById('filter-bar-favs');
+  const filterChips = filterBar.querySelectorAll('.filter-chip');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      favsFilter = chip.dataset.filter;
+      renderFavs();
+    });
+  });
+
   async function renderFavs() {
     const season = seasonState.favs;
     const favs = await dbGetByIndex(STORE_FAVS, 'season', season);
@@ -555,41 +579,49 @@
       validFavs.push({ fav, topItem, bottomItem });
     }
 
-    if (validFavs.length === 0) {
+    // Apply filter
+    const filtered = validFavs.filter(({ fav }) => {
+      if (favsFilter === 'tried') return fav.tried === true;
+      if (favsFilter === 'untried') return !fav.tried;
+      return true;
+    });
+
+    if (filtered.length === 0) {
       favsEmpty.style.display = 'flex';
       favsList.style.display = 'none';
       return;
     }
 
     favsEmpty.style.display = 'none';
-    favsList.style.display = 'flex';
+    favsList.style.display = 'grid';
 
-    validFavs.forEach(({ fav, topItem, bottomItem }, i) => {
+    filtered.forEach(({ fav, topItem, bottomItem }, i) => {
       const card = document.createElement('div');
-      card.className = 'fav-card';
-      card.style.animationDelay = `${i * 0.05}s`;
+      card.className = 'fav-card' + (fav.tried ? ' is-tried' : '');
+      card.style.animationDelay = `${i * 0.04}s`;
 
       const topURL = blobToObjectURL(topItem.blob);
       const bottomURL = blobToObjectURL(bottomItem.blob);
 
       const date = new Date(fav.timestamp);
-      const dateStr = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getDate().toString().padStart(2,'0')}`;
+      const dateStr = `${(date.getMonth()+1)}/${date.getDate()}`;
+
+      const triedLabel = fav.tried ? '挑戦済み ✓' : '未挑戦';
+      const triedClass = fav.tried ? 'tried-toggle is-tried' : 'tried-toggle';
 
       card.innerHTML = `
         <div class="fav-images">
           <div class="fav-img-wrapper">
             <img src="${topURL}" alt="トップス" loading="lazy">
-            <span class="fav-img-label">トップス</span>
           </div>
           <div class="fav-img-wrapper">
             <img src="${bottomURL}" alt="ボトムス" loading="lazy">
-            <span class="fav-img-label">ボトムス</span>
           </div>
         </div>
         <div class="fav-card-footer">
-          <span class="fav-date">${dateStr}</span>
+          <button class="${triedClass}">${triedLabel}</button>
           <button class="fav-delete-btn" aria-label="削除">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"/>
               <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
             </svg>
@@ -601,6 +633,16 @@
         img._objectURL = idx === 0 ? topURL : bottomURL;
       });
 
+      // Tried toggle
+      const triedBtn = card.querySelector('.tried-toggle');
+      triedBtn.addEventListener('click', async () => {
+        fav.tried = !fav.tried;
+        await dbPut(STORE_FAVS, fav);
+        await renderFavs();
+        showToast(fav.tried ? '挑戦済みにしました' : '未挑戦に戻しました');
+      });
+
+      // Delete
       const delBtn = card.querySelector('.fav-delete-btn');
       delBtn.addEventListener('click', async () => {
         const ok = await showModal('このコーデをお気に入りから削除しますか？');
