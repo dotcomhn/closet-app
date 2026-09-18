@@ -579,6 +579,17 @@
       validFavs.push({ fav, topItem, bottomItem });
     }
 
+    // Update filter chip counts
+    const triedCount = validFavs.filter(({ fav }) => fav.tried === true).length;
+    const untriedCount = validFavs.filter(({ fav }) => !fav.tried).length;
+    const allCount = validFavs.length;
+    filterChips.forEach(chip => {
+      const f = chip.dataset.filter;
+      if (f === 'all') chip.textContent = `すべて ${allCount}`;
+      if (f === 'untried') chip.textContent = `未挑戦 ${untriedCount}`;
+      if (f === 'tried') chip.textContent = `挑戦済み ${triedCount}`;
+    });
+
     // Apply filter
     const filtered = validFavs.filter(({ fav }) => {
       if (favsFilter === 'tried') return fav.tried === true;
