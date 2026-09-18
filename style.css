@@ -223,7 +223,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 32px);
+  padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 80px);
   display: none;
   opacity: 0;
   transition: opacity 0.25s var(--ease-out);
@@ -489,6 +489,7 @@ body {
   flex-direction: column;
   align-items: stretch;
   padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom));
+  overflow: hidden;
 }
 
 .swipe-area {
@@ -498,9 +499,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: 4px 16px;
   position: relative;
   overflow: hidden;
+  min-height: 0;
 }
 
 .swipe-area.hidden {
@@ -558,6 +560,7 @@ body {
 .swipe-card {
   width: calc(100% - 24px);
   max-width: 340px;
+  max-height: calc(100% - 100px);
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -570,6 +573,8 @@ body {
   position: relative;
   z-index: 5;
   cursor: grab;
+  display: flex;
+  flex-direction: column;
 }
 
 .swipe-card:active {
@@ -588,11 +593,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
+  min-height: 0;
 }
 
 .card-img-wrapper {
   width: 100%;
-  aspect-ratio: 4 / 2.6;
+  flex: 1;
+  min-height: 0;
   position: relative;
   overflow: hidden;
   background: var(--bg-secondary);
@@ -635,7 +643,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 40px;
-  padding: 14px 0 2px;
+  padding: 8px 0 0;
+  flex-shrink: 0;
 }
 
 .action-btn {
@@ -680,16 +689,18 @@ body {
   font-size: 0.7rem;
   color: var(--text-tertiary);
   text-align: center;
-  padding: 4px 0 0;
+  padding: 2px 0 0;
   font-weight: 400;
+  flex-shrink: 0;
 }
 
 .fav-counter {
   font-size: 0.72rem;
   color: var(--accent-rose);
   text-align: center;
-  padding: 2px 0 0;
+  padding: 0;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 /* ========================================
